@@ -1,0 +1,27 @@
+<options>
+	<option>
+		<label>database</label>
+		<description>Database type - sqlite, mysql</description>
+                <path>schedule.database</path>
+		<default>sqlite</default>
+	</option>
+	<option>
+		<label>email</label>
+		<description>default email</description>
+                <path>schedule.email</path>
+		<default>email@email.com</default>
+	</option>
+	<option>
+		<label>port</label>
+		<description>default port for REST api</description>
+                <path>schedule.port</path>
+		<default>3002</default>
+	</option>
+<!--
+	<option>
+		<name></name>
+		<description></description>
+		<default></default>
+	</option>
+-->
+</options>

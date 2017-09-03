@@ -1,0 +1,14 @@
+<schedule>
+	<database>sqlite</database>
+        <email></email>
+        <port>3002</port>
+   
+	<item>
+		<script>write_time_to_tmp</script>
+		<repeat>hourly</repeat>
+	</item>
+	<item>
+		<script>write_free_to_tmp</script>
+		<repeat>minutely</repeat>
+	</item>
+</schedule>

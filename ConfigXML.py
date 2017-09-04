@@ -23,6 +23,7 @@ class xmlparser(object):
       default=option.find('default')
       if label != -1 and default != -1:
         self.defaultDict[label.string]=default.string
+        
     # for entry in self.configFile.configuration:
       
 

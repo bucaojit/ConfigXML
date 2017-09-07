@@ -61,9 +61,6 @@ class xmlparser(object):
     
   def getConfigValue(self, query):
     return self.getConfigValue(self.configDict, query)
-      
-          
-        
     #  value.fetchText()
     #  Ignore the first, process the rest
     #  First one seems to be the outer tag

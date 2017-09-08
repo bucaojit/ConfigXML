@@ -24,26 +24,34 @@ class xmlparser(object):
       if label != -1 and default != -1:
         self.defaultDict[label.string]=default.string
     first = True
+    ignoreCount = 0
     
-    for entry in self.defaultConfig.fetchText():
+    for entry in self.configFile.fetchText():
       if first:
         first = False
         continue
       
-      currentValue = entry.contents
+      if ignoreCount > 0:
+        ignoreCount -= 1
+        continue
+      if len(entry.contents) > 0:
+        currentValue = entry.contents[0]
+      else:
+        currentValue = ""
+        
       entriesDict = {}
-      # Check if key exists in the dictionary
-      if len(entry.contents) > 1:
+      if len(entry.contents) > 1:        
         # Process as a separate dictionary
         for singleEntry in entry.contents:
           if singleEntry == '\n':
             continue
-          entriesDict[singleEntry.name] = singleEntry.contents
+          ignoreCount += 1
+          entriesDict[singleEntry.name] = singleEntry.contents[0]
         currentValue = entriesDict
           
       if entry.name in self.configDict:
         existingEntry = self.configDict[entry.name]
-        if not isinstance(existingEntry, list):
+        if isinstance(existingEntry, list):
           list(existingEntry).append(currentValue)
         else:
           newlist = []
@@ -52,43 +60,27 @@ class xmlparser(object):
           self.configDict[entry.name] = newlist
       else:
         self.configDict[entry.name] = currentValue
-  def getConfigValue(self, configDictionary, query):
+  def getConfigValueRecurse(self, configDictionary, query):
+    # For multiple layers of XML
     querylist = query.split(".")
     if len(querylist) == 1:
-      return configDictionary[querylist]
+      return configDictionary[querylist[0]]
     
-    getConfigValue(configDictionary[querylist[0]], ".".join(querylist[1:]))
+    self.getConfigValueRecurse(configDictionary[querylist[0]], ".".join(querylist[1:]))
     
   def getConfigValue(self, query):
-    return self.getConfigValue(self.configDict, query)
-    #  value.fetchText()
-    #  Ignore the first, process the rest
-    #  First one seems to be the outer tag
-    #  If there is still one level down then dictionary
-    #  If more exists then create a list
-    #  Leave up to user to know if something is a list
-    #    Have them iterate more
+    return self.getConfigValueRecurse(self.configDict, query)
 
   def getValue(self, key):
-    """
-     algorithm:
-     - Check if key exists ie schedule.database
-     - What to do if list vs singleton?
-     - If not in config, check for default
-     - If does not exist then throw error or return null
-    """
-    return "Single Value"
-    
-
-  def getList(self, key):
-    # This is used for list of options in the XML
-    # - Return an array of the 'option' this would need to be iterated
-    # - OR return an array of dictionaries, iterate through the array
-    # - User will always need to know the structure of their config file
-    return "Array of dictionary entries"
-  
-
-# Notes:
-# Use - 
-# func: find, findAll, fetchText, firstText, getString, getText, 
-# tag:  contents, name
+    try:
+      returnVal = self.configDict[key]
+    except:
+      returnVal = None
+      
+    if returnVal is None:
+      try:
+        returnVal = self.defaultDict[key]
+      except:
+        returnVal = None
+        
+    return returnVal
